@@ -1,6 +1,7 @@
+import AdminLayoutWithAuth from "@/components/sharedCom/layout";
 
 export default function DashboardPage() {
   return (
-    <div>DashboardPage</div>
+    <AdminLayoutWithAuth>DashboardPage</AdminLayoutWithAuth>
   )
 }

@@ -48,7 +48,7 @@ api.interceptors.response.use(
 
         // console.log("res", res);
 
-        const accessToken = res.data.data;
+        const { accessToken, user } = res.data.data;
 
         // update redux
         if (store) {
@@ -56,7 +56,7 @@ api.interceptors.response.use(
             type: "auth/setCredentials",
             payload: {
               accessToken,
-              user: JSON.parse(atob(accessToken.split(".")[1])),
+              user,
             },
           });
         }
