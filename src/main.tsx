@@ -5,6 +5,9 @@ import { RouterProvider } from "react-router/dom";
 import router from "./route/index.tsx";
 import { Provider } from "react-redux";
 import { store } from "./app/store.ts";
+import { injectStore } from "./lib/api.ts";
+
+injectStore(store);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

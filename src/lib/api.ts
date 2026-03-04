@@ -1,5 +1,10 @@
-import { store } from "@/app/store";
 import axios from "axios";
+
+let store: any;
+
+export const injectStore = (_store: any) => {
+  store = _store;
+};
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -13,17 +18,17 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = store.getState().auth.accessToken;
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (store) {
+      const token = store.getState().auth.accessToken;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     return config;
   },
   (error) => Promise.reject(error),
 );
-
 
 api.interceptors.response.use(
   (response) => response,
@@ -44,13 +49,15 @@ api.interceptors.response.use(
         const newAccessToken = res.data.data;
 
         // update redux
-        store.dispatch({
-          type: "auth/setCredentials",
-          payload: {
-            accessToken: newAccessToken,
-            user: JSON.parse(atob(newAccessToken.split(".")[1])),
-          },
-        });
+        if (store) {
+          store.dispatch({
+            type: "auth/setCredentials",
+            payload: {
+              accessToken: newAccessToken,
+              user: JSON.parse(atob(newAccessToken.split(".")[1])),
+            },
+          });
+        }
 
         // retry original request
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -58,7 +65,9 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         // refresh failed → logout
-        store.dispatch({ type: "auth/logout" });
+        if (store) {
+          store.dispatch({ type: "auth/logout" });
+        }
         return Promise.reject(refreshError);
       }
     }
