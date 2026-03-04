@@ -30,12 +30,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data: LoginFormInputs) => {
-    console.log("data", data);
+    // console.log("data", data);
     dispatch(loginUser(data));
   };
 

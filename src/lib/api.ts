@@ -46,21 +46,23 @@ api.interceptors.response.use(
           { withCredentials: true },
         );
 
-        const newAccessToken = res.data.data;
+        // console.log("res", res);
+
+        const accessToken = res.data.data;
 
         // update redux
         if (store) {
           store.dispatch({
             type: "auth/setCredentials",
             payload: {
-              accessToken: newAccessToken,
-              user: JSON.parse(atob(newAccessToken.split(".")[1])),
+              accessToken,
+              user: JSON.parse(atob(accessToken.split(".")[1])),
             },
           });
         }
 
         // retry original request
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
         return api(originalRequest);
       } catch (refreshError) {
