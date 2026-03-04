@@ -1,7 +1,8 @@
-import React from 'react'
+import AdminLayoutWithAuth from '@/components/sharedCom/layout'
+
 
 export default function AddressPage() {
   return (
-    <div>page</div>
+    <AdminLayoutWithAuth>page</AdminLayoutWithAuth>
   )
 }
