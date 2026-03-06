@@ -14,11 +14,17 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import { APP_SIDEBAR } from "@/utils/APP_SIDEBAR";
+import { LayoutDashboardIcon } from "lucide-react";
 
 export default function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r">
-      <SidebarHeader className="p-4 font-semibold">Admin</SidebarHeader>
+      <SidebarHeader className="p-4 flex items-center gap-2">
+        <LayoutDashboardIcon className="size-5 shrink-0" />
+        <span className="font-semibold group-data-[collapsible=icon]:hidden">
+          Admin
+        </span>
+      </SidebarHeader>
 
       <SidebarContent>
         {/* Primary Nav */}
