@@ -30,9 +30,10 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await api.post("/auth/login", credentials);
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        error.response?.data?.message || "Something went wrong",
+        err.response?.data?.message || "Something went wrong",
       );
     }
   },

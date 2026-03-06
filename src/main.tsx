@@ -8,12 +8,14 @@ import { persistor, store } from "./app/store.ts";
 import { injectStore } from "./lib/api.ts";
 import { PersistGate } from "redux-persist/integration/react";
 injectStore(store);
-
+import { TooltipProvider } from "@/components/ui/tooltip";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <RouterProvider router={router} />
+        <TooltipProvider>
+          <RouterProvider router={router} />
+        </TooltipProvider>
       </PersistGate>
     </Provider>
   </StrictMode>,
