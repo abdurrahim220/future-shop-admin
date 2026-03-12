@@ -1,4 +1,3 @@
-
 import MainLayout from "@/layout/Layout";
 import AddressPage from "@/pages/address/page";
 import BrancesPage from "@/pages/branches/page";
@@ -14,24 +13,27 @@ import NotificationsPage from "@/pages/notifications/page";
 import OrderPage from "@/pages/order/page";
 import PayoutPage from "@/pages/payout/page";
 import ProductPage from "@/pages/product/page";
+import ProfilePage from "@/pages/profile/page";
 import ReviewsPage from "@/pages/reviews/page";
 import SellerPage from "@/pages/seller/page";
 import SellerWalletPage from "@/pages/sellerwallet/page";
+import SettingsPage from "@/pages/settings/page";
 import StockMovementPage from "@/pages/stockmovement/page";
 import StockTransferPage from "@/pages/stocktransfer/page";
 import SubOrderPage from "@/pages/suborder/page";
+import SupportPage from "@/pages/support/page";
 import UserPage from "@/pages/user/page";
 import { createBrowserRouter } from "react-router";
 
 const router = createBrowserRouter([
   {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
     path: "/",
     element: <MainLayout />,
     children: [
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
       {
         path: "/dashboard",
         element: <DashboardPage />,
@@ -111,10 +113,20 @@ const router = createBrowserRouter([
       {
         path: "/user",
         element: <UserPage />,
+      },
+      {
+        path:'/support',
+        element:<SupportPage/>
+      },
+      {
+        path:"/settings",
+        element:<SettingsPage/>
+      },{
+        path:"/profile",
+        element:<ProfilePage/>
       }
     ],
   },
 ]);
-
 
 export default router;
