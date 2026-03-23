@@ -1,5 +1,11 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "@/features/auth/authSlice";
+import brandReducer from "@/features/brand/brandSlice";
+import categoriesReducer from "@/features/categories/categoriesSlice";
+import productReducer from "@/features/product/productSlice";
+import campaignReducer from "@/features/campaign/campaignSlice";
+import comboOfferReducer from "@/features/combooffers/comboOfferSlice";
+import cuponReducer from "@/features/cupons/cuponSlice";
 import {
   persistStore,
   persistReducer,
@@ -15,6 +21,12 @@ import { baseApi } from "@/services/baseApi";
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  brand: brandReducer,
+  categories: categoriesReducer,
+  product: productReducer,
+  campaign: campaignReducer,
+  comboOffer: comboOfferReducer,
+  cupon: cuponReducer,
 });
 
 const persistConfig = {
