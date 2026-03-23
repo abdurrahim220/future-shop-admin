@@ -6,6 +6,12 @@ import productReducer from "@/features/product/productSlice";
 import campaignReducer from "@/features/campaign/campaignSlice";
 import comboOfferReducer from "@/features/combooffers/comboOfferSlice";
 import cuponReducer from "@/features/cupons/cuponSlice";
+import attributeReducer from "@/features/attribute/attributeSlice";
+import attributeValueReducer from "@/features/attributevalue/attributeValueSlice";
+import stockMovementReducer from "@/features/stockmovement/stockMovementSlice";
+import stockTransferReducer from "@/features/stocktransfer/stockTransferSlice";
+import notificationReducer from "@/features/notifications/notificationSlice";
+import orderReducer from "@/features/order/orderSlice";
 import {
   persistStore,
   persistReducer,
@@ -27,6 +33,12 @@ const rootReducer = combineReducers({
   campaign: campaignReducer,
   comboOffer: comboOfferReducer,
   cupon: cuponReducer,
+  attribute: attributeReducer,
+  attributeValue: attributeValueReducer,
+  stockMovement: stockMovementReducer,
+  stockTransfer: stockTransferReducer,
+  notification: notificationReducer,
+  order: orderReducer,
 });
 
 const persistConfig = {
