@@ -26,10 +26,3 @@ export function withAuth<P extends object>(
   return Wrapper;
 }
 
-const AdminGuardContent = ({ children }: { children: React.ReactNode }) => {
-  return <>{children}</>;
-};
-
-const AdminAuthGuard = withAuth(AdminGuardContent);
-
-export default AdminAuthGuard;

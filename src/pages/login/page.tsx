@@ -35,7 +35,7 @@ export default function LoginPage() {
   }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data: LoginFormInputs) => {
-    // console.log("data", data);
+    console.log("data", data);
     dispatch(loginUser(data));
   };
 

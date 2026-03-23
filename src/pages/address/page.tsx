@@ -1,8 +1,10 @@
-import AdminLayoutWithAuth from '@/components/sharedCom/layout'
-
+import AdminLayoutWithAuth from "@/components/sharedCom/layout";
+import UnderConstruction from "@/components/sharedCom/UnderConstruction";
 
 export default function AddressPage() {
   return (
-    <AdminLayoutWithAuth>page</AdminLayoutWithAuth>
+    <AdminLayoutWithAuth>
+      <UnderConstruction pageName="Address" />
+    </AdminLayoutWithAuth>
   )
 }

@@ -1,7 +1,10 @@
-import React from 'react'
+import AdminLayoutWithAuth from "@/components/sharedCom/layout";
+import UnderConstruction from "@/components/sharedCom/UnderConstruction";
 
 export default function OrderPage() {
   return (
-    <div>OrderPage</div>
+    <AdminLayoutWithAuth>
+      <UnderConstruction pageName="Orders" />
+    </AdminLayoutWithAuth>
   )
 }

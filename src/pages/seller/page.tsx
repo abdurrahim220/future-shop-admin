@@ -1,7 +1,10 @@
-import React from 'react'
+import AdminLayoutWithAuth from "@/components/sharedCom/layout";
+import UnderConstruction from "@/components/sharedCom/UnderConstruction";
 
 export default function SellerPage() {
   return (
-    <div>SellerPage</div>
+    <AdminLayoutWithAuth>
+      <UnderConstruction pageName="Seller" />
+    </AdminLayoutWithAuth>
   )
 }

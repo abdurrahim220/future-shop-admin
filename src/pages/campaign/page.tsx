@@ -1,7 +1,10 @@
-import React from 'react'
+import AdminLayoutWithAuth from "@/components/sharedCom/layout";
+import UnderConstruction from "@/components/sharedCom/UnderConstruction";
 
 export default function CampaignPage() {
   return (
-    <div>CampaignPage</div>
+    <AdminLayoutWithAuth>
+      <UnderConstruction pageName="Campaign" />
+    </AdminLayoutWithAuth>
   )
 }

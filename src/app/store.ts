@@ -26,6 +26,7 @@ import storage from "redux-persist/lib/storage";
 import { baseApi } from "@/services/baseApi";
 
 const rootReducer = combineReducers({
+  [baseApi.reducerPath]: baseApi.reducer,
   auth: authReducer,
   brand: brandReducer,
   categories: categoriesReducer,
@@ -51,10 +52,7 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    [baseApi.reducerPath]: baseApi.reducer,
-    auth: persistedReducer,
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

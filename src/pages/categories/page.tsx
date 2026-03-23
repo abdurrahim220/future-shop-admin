@@ -1,7 +1,10 @@
-import React from 'react'
+import AdminLayoutWithAuth from "@/components/sharedCom/layout";
+import UnderConstruction from "@/components/sharedCom/UnderConstruction";
 
 export default function CategoriesPage() {
   return (
-    <div>CategoriesPage</div>
+    <AdminLayoutWithAuth>
+      <UnderConstruction pageName="Categories" />
+    </AdminLayoutWithAuth>
   )
 }

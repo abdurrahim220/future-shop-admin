@@ -1,9 +1,10 @@
 import AdminLayoutWithAuth from "@/components/sharedCom/layout";
+import UnderConstruction from "@/components/sharedCom/UnderConstruction";
 
 export default function DashboardPage() {
   return (
     <AdminLayoutWithAuth>
-      <div className="border-2 border-blue-600">DashboardPage</div>
+      <UnderConstruction pageName="Dashboard" />
     </AdminLayoutWithAuth>
   )
 }

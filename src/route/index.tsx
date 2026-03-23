@@ -23,7 +23,8 @@ import StockTransferPage from "@/pages/stocktransfer/page";
 import SubOrderPage from "@/pages/suborder/page";
 import SupportPage from "@/pages/support/page";
 import UserPage from "@/pages/user/page";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
+import ErrorPage from "@/components/sharedCom/ErrorPage";
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,12 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
+    errorElement: <ErrorPage />,
     children: [
+      {
+        index: true,
+        element: <Navigate to="/dashboard" replace />,
+      },
       {
         path: "/dashboard",
         element: <DashboardPage />,
@@ -115,15 +121,15 @@ const router = createBrowserRouter([
         element: <UserPage />,
       },
       {
-        path:'/support',
-        element:<SupportPage/>
+        path: '/support',
+        element: <SupportPage />
       },
       {
-        path:"/settings",
-        element:<SettingsPage/>
-      },{
-        path:"/profile",
-        element:<ProfilePage/>
+        path: "/settings",
+        element: <SettingsPage />
+      }, {
+        path: "/profile",
+        element: <ProfilePage />
       }
     ],
   },
