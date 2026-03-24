@@ -9,7 +9,23 @@ import { baseApi } from "@/services/baseApi";
 export const campaignApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ GET ALL CAMPAIGNS
-    getAllCampaigns: builder.query<ApiResponse<ICampaign[]>, Record<string, string> | void>({
+    getAllCampaigns: builder.query<
+      ApiResponse<{
+        items: ICampaign[];
+        meta: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      }>,
+      {
+        search?: string;
+        status?: string;
+        page?: number;
+        limit?: number;
+      } | void
+    >({
       query: (params) => ({
         url: "/campaign",
         method: "GET",
@@ -28,7 +44,7 @@ export const campaignApi = baseApi.injectEndpoints({
     }),
 
     // ✅ CREATE CAMPAIGN
-    createCampaign: builder.mutation<ApiResponse<ICampaign>, CreateCampaignPayload>({
+    createCampaign: builder.mutation<ApiResponse<ICampaign>, CreateCampaignPayload | FormData>({
       query: (data) => ({
         url: "/campaign",
         method: "POST",
@@ -40,7 +56,7 @@ export const campaignApi = baseApi.injectEndpoints({
     // ✅ UPDATE CAMPAIGN
     updateCampaign: builder.mutation<
       ApiResponse<ICampaign>,
-      { id: string; data: UpdateCampaignPayload }
+      { id: string; data: UpdateCampaignPayload | FormData }
     >({
       query: ({ id, data }) => ({
         url: `/campaign/${id}`,

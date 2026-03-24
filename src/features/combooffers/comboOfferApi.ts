@@ -6,14 +6,27 @@ import type {
 } from "@/types/comboOfferTypes";
 import { baseApi } from "@/services/baseApi";
 
+interface PaginatedData<T> {
+  items: T[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export const comboOfferApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ GET ALL COMBO OFFERS
-    getAllComboOffers: builder.query<ApiResponse<IComboOffer[]>, Record<string, string> | void>({
+    getAllComboOffers: builder.query<
+      ApiResponse<PaginatedData<IComboOffer>>,
+      Record<string, string | number | undefined> | void
+    >({
       query: (params) => ({
         url: "/combooffers",
         method: "GET",
-        params: params ? params : undefined,
+        params: params || undefined,
       }),
       providesTags: ["ComboOffers"],
     }),

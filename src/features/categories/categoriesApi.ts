@@ -5,7 +5,24 @@ import { baseApi } from "@/services/baseApi";
 export const categoriesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ GET ALL CATEGORIES
-    getAllCategories: builder.query<ApiResponse<ICategory[]>, Record<string, string> | void>({
+    getAllCategories: builder.query<
+      ApiResponse<{
+        items: ICategory[];
+        meta: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      }>,
+      {
+        search?: string;
+        isActive?: boolean | string;
+        isFeatured?: boolean | string;
+        page?: number;
+        limit?: number;
+      } | void
+    >({
       query: (params) => ({
         url: "/categories",
         method: "GET",

@@ -6,14 +6,27 @@ import type {
 } from "@/types/cuponTypes";
 import { baseApi } from "@/services/baseApi";
 
+interface PaginatedData<T> {
+  items: T[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export const cuponApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ GET ALL CUPONS
-    getAllCupons: builder.query<ApiResponse<ICupon[]>, Record<string, string> | void>({
+    getAllCupons: builder.query<
+      ApiResponse<PaginatedData<ICupon>>,
+      Record<string, string | number | undefined> | void
+    >({
       query: (params) => ({
         url: "/cupons",
         method: "GET",
-        params: params ? params : undefined,
+        params: params || undefined,
       }),
       providesTags: ["Cupons"],
     }),
