@@ -5,7 +5,18 @@ import { baseApi } from "@/services/baseApi";
 export const brandApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ GET ALL BRANDS
-    getAllBrands: builder.query<ApiResponse<IBrand[]>, Record<string, string> | void>({
+    getAllBrands: builder.query<
+      ApiResponse<{
+        items: IBrand[];
+        meta: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      }>,
+      { search?: string; isActive?: boolean | string; page?: number; limit?: number } | void
+    >({
       query: (params) => ({
         url: "/brands",
         method: "GET",
