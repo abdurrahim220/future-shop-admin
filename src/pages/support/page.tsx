@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
-import { Search, MessageSquare, AlertCircle, ChevronLeft, ChevronRight, User, Clock, CheckCircle } from "lucide-react";
+import { Search, MessageSquare, User, Clock, CheckCircle } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -203,8 +203,8 @@ export default function SupportPage() {
                         {tk.category}
                       </Badge>
                       <Badge
-                        variant={tk.priority === "high" ? "destructive" : tk.priority === "medium" ? "warning" : "secondary"}
-                        className="text-[10px] capitalize"
+                        variant={tk.priority === "high" ? "destructive" : tk.priority === "medium" ? "outline" : "secondary"}
+                        className={`text-[10px] capitalize ${tk.priority === "medium" ? "bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20" : ""}`}
                       >
                         {tk.priority}
                       </Badge>
@@ -245,8 +245,8 @@ export default function SupportPage() {
                   <span className="text-xs font-mono font-bold text-muted-foreground">{selectedTicket.id}</span>
                   <Badge variant="outline" className="text-[10px] capitalize">{selectedTicket.category}</Badge>
                   <Badge
-                    variant={selectedTicket.priority === "high" ? "destructive" : selectedTicket.priority === "medium" ? "warning" : "secondary"}
-                    className="text-[10px] capitalize"
+                    variant={selectedTicket.priority === "high" ? "destructive" : selectedTicket.priority === "medium" ? "outline" : "secondary"}
+                    className={`text-[10px] capitalize ${selectedTicket.priority === "medium" ? "bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20" : ""}`}
                   >
                     {selectedTicket.priority}
                   </Badge>

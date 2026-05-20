@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "react-toastify";
-import { Save, RefreshCw, Sliders, Shield, Landmark, Globe } from "lucide-react";
+import { Save, RefreshCw, Shield, Landmark, Globe } from "lucide-react";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({

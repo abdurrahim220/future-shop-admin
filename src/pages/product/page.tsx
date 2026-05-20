@@ -42,11 +42,13 @@ export default function ProductPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const { data: productsResponse, isLoading, isError, refetch, isFetching } = useGetAllProductsQuery({
-    search: searchTerm || undefined,
-    status: statusFilter === "all" ? undefined : statusFilter,
+  const queryParams: Record<string, string> = {
     page: currentPage.toString(),
-  });
+  };
+  if (searchTerm) queryParams.search = searchTerm;
+  if (statusFilter !== "all") queryParams.status = statusFilter;
+
+  const { data: productsResponse, isLoading, isError, refetch, isFetching } = useGetAllProductsQuery(queryParams);
 
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
 

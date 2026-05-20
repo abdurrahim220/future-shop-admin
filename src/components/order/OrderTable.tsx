@@ -9,15 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/trigger-custom"; // Wait, in Shadcn, let's make sure dropdown is correct. Let's see if we can use standard DropdownMenu elements. Wait, let's double check standard dropdown file name. In Shadcn, it is @/components/ui/dropdown-menu. Let's write the import correctly.
-import { Eye, Edit3, Trash2, MoreHorizontal } from "lucide-react";
+import { Eye, Edit3, Trash2 } from "lucide-react";
 
 interface OrderTableProps {
   orders: IOrder[];

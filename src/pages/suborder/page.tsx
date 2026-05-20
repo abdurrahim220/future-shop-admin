@@ -23,7 +23,7 @@ export default function SubOrderPage() {
     page: currentPage.toString(),
   });
 
-  const subOrdersList = subOrdersResponse?.data || [];
+  const subOrdersList = subOrdersResponse?.data?.items || [];
 
   return (
     <AdminLayoutWithAuth>

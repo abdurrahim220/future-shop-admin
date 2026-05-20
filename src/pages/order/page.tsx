@@ -25,7 +25,7 @@ import {
 import OrderTable from "@/components/order/OrderTable";
 import OrderStatusForm from "@/components/order/OrderStatusForm";
 import type { IOrder } from "@/types/orderTypes";
-import { Search, RefreshCw, AlertCircle, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { Search, RefreshCw, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -45,11 +45,13 @@ export default function OrderPage() {
   const [viewingOrder, setViewingOrder] = useState<IOrder | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const { data: ordersResponse, isLoading, isError, refetch, isFetching } = useGetAllOrdersQuery({
-    search: searchTerm || undefined,
-    status: statusFilter === "all" ? undefined : statusFilter,
+  const queryParams: Record<string, string> = {
     page: currentPage.toString(),
-  });
+  };
+  if (searchTerm) queryParams.search = searchTerm;
+  if (statusFilter !== "all") queryParams.status = statusFilter;
+
+  const { data: ordersResponse, isLoading, isError, refetch, isFetching } = useGetAllOrdersQuery(queryParams);
 
   const [deleteOrder, { isLoading: isDeleting }] = useDeleteOrderMutation();
 

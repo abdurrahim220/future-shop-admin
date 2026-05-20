@@ -15,7 +15,6 @@ import {
   Clock,
   RefreshCw,
   Activity,
-  ArrowUpRight,
   ShieldCheck,
   Zap,
 } from "lucide-react";
@@ -43,10 +42,10 @@ export default function DashboardPage() {
 
   const totalOrders = orders.length;
   const totalRevenue = orders.reduce((sum, order) => {
-    const amount = typeof order.totalAmount === "number" ? order.totalAmount : 0;
+    const amount = typeof order.subtotal === "number" ? order.subtotal : 0;
     return sum + amount;
   }, 0);
-  const activeSellersCount = sellers.filter(s => s.status === "active").length;
+  const activeSellersCount = sellers.filter(s => s.status === "approved").length;
 
   return (
     <AdminLayoutWithAuth>

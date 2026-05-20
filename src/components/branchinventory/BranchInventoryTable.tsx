@@ -74,7 +74,7 @@ export default function BranchInventoryTable({ inventories }: BranchInventoryTab
                         Out of Stock
                       </Badge>
                     ) : isLowStock ? (
-                      <Badge variant="warning" className="gap-1 bg-amber-500/10 text-amber-500 border-amber-500/20">
+                      <Badge variant="outline" className="gap-1 bg-amber-500/10 text-amber-500 border-amber-500/20">
                         <AlertTriangle className="h-3 w-3" />
                         Low Stock
                       </Badge>

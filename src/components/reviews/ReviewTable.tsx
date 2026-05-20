@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { IReview } from "@/types/reviewTypes";
-import { Star, Check, X, Trash2, MoreHorizontal, MessageSquare, ShieldAlert } from "lucide-react";
+import { Star, Check, X, Trash2, MoreHorizontal, MessageSquare } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,

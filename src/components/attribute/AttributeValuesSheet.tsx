@@ -19,7 +19,7 @@ import {
 } from "@/features/attributevalue/attributeValueApi";
 import type { IAttribute } from "@/types/attributeTypes";
 import type { IAttributeValue } from "@/types/attributeValueTypes";
-import { Plus, Trash2, Edit2, Loader2, RefreshCw } from "lucide-react";
+import { Trash2, Edit2, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "react-toastify";
 
 interface AttributeValuesSheetProps {

@@ -27,11 +27,13 @@ export default function StockMovementPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: response, isLoading, isError, refetch, isFetching } = useGetAllStockMovementsQuery({
-    search: searchTerm || undefined,
-    type: typeFilter === "all" ? undefined : typeFilter,
+  const queryParams: Record<string, string> = {
     page: currentPage.toString(),
-  });
+  };
+  if (searchTerm) queryParams.search = searchTerm;
+  if (typeFilter !== "all") queryParams.type = typeFilter;
+
+  const { data: response, isLoading, isError, refetch, isFetching } = useGetAllStockMovementsQuery(queryParams);
 
   const movementsList = response?.data || [];
 

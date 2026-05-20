@@ -19,7 +19,7 @@ interface OrderStatusFormProps {
 }
 
 export default function OrderStatusForm({ order, onSuccess }: OrderStatusFormProps) {
-  const { register, handleSubmit, setValue, watch } = useForm<UpdateOrderPayload>({
+  const { handleSubmit, setValue } = useForm<UpdateOrderPayload>({
     defaultValues: {
       status: order.status,
       paymentStatus: order.paymentStatus,

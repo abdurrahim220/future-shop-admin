@@ -1,4 +1,3 @@
-import { useState } from "react";
 import AdminLayoutWithAuth from "@/components/sharedCom/layout";
 import {
   useGetAllNotificationsQuery,
@@ -7,12 +6,12 @@ import {
 } from "@/features/notifications/notificationApi";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, RefreshCw, AlertCircle, Trash2, CheckCircle2, Mail, MailOpen } from "lucide-react";
+import { RefreshCw, AlertCircle, Trash2, CheckCircle2, Mail, MailOpen } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-toastify";
 
 export default function NotificationsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
+  const currentPage = 1;
 
   const { data: response, isLoading, isError, refetch, isFetching } = useGetAllNotificationsQuery({
     page: currentPage.toString(),

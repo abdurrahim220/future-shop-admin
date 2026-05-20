@@ -42,10 +42,12 @@ export default function StockTransferPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const { data: response, isLoading, isError, refetch, isFetching } = useGetAllStockTransfersQuery({
-    search: searchTerm || undefined,
+  const queryParams: Record<string, string> = {
     page: currentPage.toString(),
-  });
+  };
+  if (searchTerm) queryParams.search = searchTerm;
+
+  const { data: response, isLoading, isError, refetch, isFetching } = useGetAllStockTransfersQuery(queryParams);
 
   const [createTransfer, { isLoading: isCreating }] = useCreateStockTransferMutation();
   const [updateTransfer, { isLoading: isUpdating }] = useUpdateStockTransferMutation();
