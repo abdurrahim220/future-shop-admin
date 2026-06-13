@@ -6,6 +6,13 @@ export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: config.apiBaseUrl,
     credentials: "include",
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as any).auth?.accessToken;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   tagTypes: [
     "Users",

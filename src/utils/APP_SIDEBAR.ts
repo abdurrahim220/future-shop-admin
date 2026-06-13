@@ -21,6 +21,7 @@ import {
   UserIcon,
   LogOutIcon,
   BookOpenIcon,
+  Image,
 } from "lucide-react";
 
 export const APP_SIDEBAR = {
@@ -49,6 +50,11 @@ export const APP_SIDEBAR = {
       title: "Brands",
       url: "/brands",
       Icon: TagIcon,
+    },
+    {
+      title: "Banners",
+      url: "/banners",
+      Icon: Image,
     },
     {
       title: "Campaign",

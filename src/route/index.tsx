@@ -3,6 +3,7 @@ import AddressPage from "@/pages/address/page";
 import BrancesPage from "@/pages/branches/page";
 import BranchInventoryPage from "@/pages/branchinventory/page";
 import BrandsPage from "@/pages/brands/page";
+import BannersPage from "@/pages/banners/page";
 import CampaignPage from "@/pages/campaign/page";
 import CategoriesPage from "@/pages/categories/page";
 import ComboOffersPage from "@/pages/combooffers/page";
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: "/brands",
         element: <BrandsPage />,
+      },
+      {
+        path: "/banners",
+        element: <BannersPage />,
       },
       {
         path: "/campaign",
