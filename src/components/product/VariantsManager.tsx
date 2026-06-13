@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,12 @@ import {
 } from "@/features/product/productApi";
 import { useGetAllAttributesQuery } from "@/features/attribute/attributeApi";
 import { useGetAllAttributeValuesQuery } from "@/features/attributevalue/attributeValueApi";
+import { useGetAllBranchesQuery } from "@/features/branches/branchApi";
+import {
+  useCreateBranchInventoryMutation,
+  useUpdateBranchInventoryMutation,
+  useGetAllBranchInventoriesQuery,
+} from "@/features/branchinventory/branchInventoryApi";
 import { Loader2, Plus, Trash2, Edit2 } from "lucide-react";
 
 interface VariantsManagerProps {
@@ -41,25 +47,77 @@ interface NewVariantFormValues {
   purchasePrice: number;
   salePrice: number;
   attributes: Record<string, string>; // attributeId -> attributeValueId
+  stock?: Record<string, number>;
 }
 
 export default function VariantsManager({ product, onSuccess }: VariantsManagerProps) {
   const { data: productResponse, refetch, isLoading: isProductLoading } = useGetProductByIdQuery(product._id);
   const { data: attributesResponse } = useGetAllAttributesQuery();
   const { data: attrValuesResponse } = useGetAllAttributeValuesQuery();
+  const { data: branchesResponse } = useGetAllBranchesQuery();
+  const { data: inventoriesResponse, refetch: refetchInventories } = useGetAllBranchInventoriesQuery();
 
   const [createVariant, { isLoading: isCreatingVariant }] = useCreateVariantMutation();
   const [updateVariant, { isLoading: isUpdatingVariant }] = useUpdateVariantMutation();
   const [uploadFiles, { isLoading: isUploading }] = useUploadFilesMutation();
+  const [createBranchInventory] = useCreateBranchInventoryMutation();
+  const [updateBranchInventory] = useUpdateBranchInventoryMutation();
 
   const [editingVariant, setEditingVariant] = useState<IProductVariant | null>(null);
   const [isAddingVariant, setIsAddingVariant] = useState(false);
   const [variantImages, setVariantImages] = useState<string[]>([]);
+  const [variantStock, setVariantStock] = useState<Record<string, number>>({});
 
   const productData = productResponse?.data;
   const variants = productData?.variants || [];
   const attributes = attributesResponse?.data || [];
   const allAttributeValues = attrValuesResponse?.data || [];
+  const branches = (branchesResponse?.data || []) as any[];
+  const inventories = inventoriesResponse?.data
+    ? (Array.isArray(inventoriesResponse.data) ? inventoriesResponse.data : (inventoriesResponse.data as any).items || [])
+    : [];
+
+  const defaultVar = !product.hasVariants
+    ? (variants.find((v: IProductVariant) => v.isDefault) || variants[0])
+    : null;
+
+  // Load stock for standard product
+  useEffect(() => {
+    if (!product.hasVariants && defaultVar && inventories.length > 0) {
+      const stock: Record<string, number> = {};
+      inventories
+        .filter((inv: any) => {
+          const invProdId = typeof inv.productId === "object" ? inv.productId?._id : inv.productId;
+          const invVarId = typeof inv.variantId === "object" ? inv.variantId?._id : inv.variantId;
+          return invProdId === product._id && invVarId === defaultVar._id;
+        })
+        .forEach((inv: any) => {
+          const branchId = typeof inv.branchId === "object" ? inv.branchId?._id : inv.branchId;
+          if (branchId) stock[branchId] = inv.stock;
+        });
+      setVariantStock(stock);
+    }
+  }, [inventoriesResponse, productResponse, product.hasVariants]);
+
+  // Load stock when editing a custom variant
+  useEffect(() => {
+    if (editingVariant && inventories.length > 0) {
+      const stock: Record<string, number> = {};
+      inventories
+        .filter((inv: any) => {
+          const invProdId = typeof inv.productId === "object" ? inv.productId?._id : inv.productId;
+          const invVarId = typeof inv.variantId === "object" ? inv.variantId?._id : inv.variantId;
+          return invProdId === product._id && invVarId === editingVariant._id;
+        })
+        .forEach((inv: any) => {
+          const branchId = typeof inv.branchId === "object" ? inv.branchId?._id : inv.branchId;
+          if (branchId) stock[branchId] = inv.stock;
+        });
+      setVariantStock(stock);
+    } else if (!editingVariant) {
+      setVariantStock({});
+    }
+  }, [editingVariant, inventoriesResponse]);
 
   // Filter attributes that this product supports
   const supportedAttributes = attributes.filter((attr) =>
@@ -153,12 +211,29 @@ export default function VariantsManager({ product, onSuccess }: VariantsManagerP
         attributeValues,
       };
 
-      await createVariant({ productId: product._id, data: payload }).unwrap();
+      const res = await createVariant({ productId: product._id, data: payload }).unwrap();
+      const newVar = res.data;
+
+      // Save stock levels
+      if (newVar && values.stock) {
+        const promises = Object.entries(values.stock).map(([branchId, qty]) => {
+          return createBranchInventory({
+            productId: product._id,
+            variantId: newVar._id,
+            branchId,
+            stock: Number(qty || 0),
+            reorderLevel: 0,
+          }).unwrap();
+        });
+        await Promise.all(promises);
+      }
+
       toast.success("Variant created successfully");
       setIsAddingVariant(false);
       setVariantImages([]);
       reset();
       refetch();
+      refetchInventories();
       if (onSuccess) onSuccess();
     } catch (error: any) {
       toast.error(error.data?.message || "Failed to create variant");
@@ -166,28 +241,58 @@ export default function VariantsManager({ product, onSuccess }: VariantsManagerP
   };
 
   const handleSaveEdit = async () => {
-    if (!editingVariant) return;
+    const target = editingVariant || defaultVar;
+    if (!target) return;
 
     try {
       const payload = {
-        sku: editingVariant.sku,
-        purchasePrice: Number(editingVariant.purchasePrice),
-        salePrice: Number(editingVariant.salePrice),
-        images: editingVariant.images || [],
+        sku: target.sku,
+        purchasePrice: Number(target.purchasePrice),
+        salePrice: Number(target.salePrice),
+        images: target.images || [],
       };
 
       await updateVariant({
         productId: product._id,
-        variantId: editingVariant._id,
+        variantId: target._id,
         data: payload,
       }).unwrap();
 
-      toast.success("Variant updated successfully");
+      // Save branch stock levels
+      const promises = Object.entries(variantStock).map(async ([branchId, stockQty]) => {
+        const qty = Number(stockQty || 0);
+
+        const existingInv = inventories.find((inv: any) => {
+          const invProdId = typeof inv.productId === "object" ? inv.productId?._id : inv.productId;
+          const invVarId = typeof inv.variantId === "object" ? inv.variantId?._id : inv.variantId;
+          const invBranchId = typeof inv.branchId === "object" ? inv.branchId?._id : inv.branchId;
+          return invProdId === product._id && invVarId === target._id && invBranchId === branchId;
+        });
+
+        if (existingInv) {
+          return updateBranchInventory({
+            id: existingInv._id,
+            data: { stock: qty },
+          }).unwrap();
+        } else {
+          return createBranchInventory({
+            productId: product._id,
+            variantId: target._id,
+            branchId,
+            stock: qty,
+            reorderLevel: 0,
+          }).unwrap();
+        }
+      });
+      await Promise.all(promises);
+
+      toast.success("Details updated successfully");
       setEditingVariant(null);
       refetch();
+      refetchInventories();
       if (onSuccess) onSuccess();
     } catch (error: any) {
-      toast.error(error.data?.message || "Failed to update variant");
+      toast.error(error.data?.message || "Failed to update details");
     }
   };
 
@@ -286,6 +391,39 @@ export default function VariantsManager({ product, onSuccess }: VariantsManagerP
           </div>
         </div>
 
+        {/* Stock Levels */}
+        <div className="space-y-3 pt-2">
+          <Label className="text-base font-semibold">Stock Management (per Location)</Label>
+          <div className="border rounded-lg p-3 bg-background space-y-3 divide-y">
+            {branches.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-2">No branches configured.</p>
+            ) : (
+              branches.map((branch) => (
+                <div key={branch._id} className="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-medium">{branch.branchName}</Label>
+                    <p className="text-xs text-muted-foreground capitalize">{branch.city} • {branch.type}</p>
+                  </div>
+                  <div className="w-28">
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      className="text-right"
+                      value={variantStock[branch._id] || 0}
+                      onChange={(e) =>
+                        setVariantStock({
+                          ...variantStock,
+                          [branch._id]: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
         <div className="flex justify-end pt-4 border-t">
           <Button
             onClick={handleSaveEdit}
@@ -293,7 +431,7 @@ export default function VariantsManager({ product, onSuccess }: VariantsManagerP
             className="w-full sm:w-auto"
           >
             {isUpdatingVariant && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Price & Images
+            Save Details
           </Button>
         </div>
       </div>
@@ -321,13 +459,14 @@ export default function VariantsManager({ product, onSuccess }: VariantsManagerP
                   <TableHead>Purchase (৳)</TableHead>
                   <TableHead>Sale (৳)</TableHead>
                   <TableHead>Images</TableHead>
+                  <TableHead>Stock Level</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {variants.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground text-xs">
+                    <TableCell colSpan={6} className="text-center py-6 text-muted-foreground text-xs">
                       No options defined. Add options to sell this product.
                     </TableCell>
                   </TableRow>
@@ -358,6 +497,25 @@ export default function VariantsManager({ product, onSuccess }: VariantsManagerP
                                 +{v.images.length - 3}
                               </Badge>
                             )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col gap-1 text-xs min-w-[120px]">
+                            {branches.map((branch) => {
+                              const inv = inventories.find((invItem: any) => {
+                                const invProdId = typeof invItem.productId === "object" ? invItem.productId?._id : invItem.productId;
+                                const invVarId = typeof invItem.variantId === "object" ? invItem.variantId?._id : invItem.variantId;
+                                const invBranchId = typeof invItem.branchId === "object" ? invItem.branchId?._id : invItem.branchId;
+                                return invProdId === product._id && invVarId === v._id && invBranchId === branch._id;
+                              });
+                              const stockQty = inv ? inv.stock : 0;
+                              return (
+                                <div key={branch._id} className="flex justify-between gap-2 border-b last:border-0 border-dashed pb-0.5">
+                                  <span className="text-[10px] text-muted-foreground truncate max-w-24">{branch.branchName}:</span>
+                                  <span className="font-semibold text-[10px]">{stockQty}</span>
+                                </div>
+                              );
+                            })}
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
@@ -441,6 +599,39 @@ export default function VariantsManager({ product, onSuccess }: VariantsManagerP
                   onChange={(e) => handleImageUpload(e, true)}
                 />
               </label>
+            </div>
+          </div>
+
+          {/* Stock Levels */}
+          <div className="space-y-3 pt-2">
+            <Label className="text-sm font-semibold">Stock Management (per Location)</Label>
+            <div className="border rounded-lg p-3 bg-background space-y-3 divide-y">
+              {branches.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-2">No branches configured.</p>
+              ) : (
+                branches.map((branch) => (
+                  <div key={branch._id} className="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">{branch.branchName}</Label>
+                      <p className="text-xs text-muted-foreground capitalize">{branch.city} • {branch.type}</p>
+                    </div>
+                    <div className="w-28">
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        className="text-right"
+                        value={variantStock[branch._id] || 0}
+                        onChange={(e) =>
+                          setVariantStock({
+                            ...variantStock,
+                            [branch._id]: Number(e.target.value),
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -555,6 +746,33 @@ export default function VariantsManager({ product, onSuccess }: VariantsManagerP
                   onChange={(e) => handleImageUpload(e)}
                 />
               </label>
+            </div>
+          </div>
+
+          {/* Stock Levels */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold">Stock Management (per Location)</Label>
+            <div className="border rounded-lg p-3 bg-background space-y-3 divide-y">
+              {branches.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-2">No branches configured.</p>
+              ) : (
+                branches.map((branch) => (
+                  <div key={branch._id} className="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">{branch.branchName}</Label>
+                      <p className="text-xs text-muted-foreground capitalize">{branch.city} • {branch.type}</p>
+                    </div>
+                    <div className="w-28">
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        className="text-right"
+                        {...register(`stock.${branch._id}`, { valueAsNumber: true })}
+                      />
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

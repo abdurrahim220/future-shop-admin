@@ -1,3 +1,6 @@
+import type { ICategory } from "./categoryTypes";
+import type { IBrand } from "./brandTypes";
+
 export interface IAttributeValuePair {
   attributeId: string;
   attributeValueId: string;
@@ -6,8 +9,8 @@ export interface IAttributeValuePair {
 export interface IProduct {
   _id: string; // The backend uses MongoDB
   sellerId: string;
-  categoryId: string;
-  brandId: string;
+  categoryId: string | ICategory;
+  brandId: string | IBrand;
   name: string;
   sku: string;
   slug: string;

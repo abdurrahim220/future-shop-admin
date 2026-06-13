@@ -24,9 +24,37 @@ export const branchInventoryApi = baseApi.injectEndpoints({
       }),
       providesTags: ["BranchInventory"],
     }),
+
+    // ✅ CREATE BRANCH INVENTORY
+    createBranchInventory: builder.mutation<
+      ApiResponse<IBranchInventory>,
+      Partial<IBranchInventory>
+    >({
+      query: (data) => ({
+        url: "/branch-inventory",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["BranchInventory"],
+    }),
+
+    // ✅ UPDATE BRANCH INVENTORY
+    updateBranchInventory: builder.mutation<
+      ApiResponse<IBranchInventory>,
+      { id: string; data: Partial<IBranchInventory> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/branch-inventory/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["BranchInventory"],
+    }),
   }),
 });
 
 export const {
   useGetAllBranchInventoriesQuery,
+  useCreateBranchInventoryMutation,
+  useUpdateBranchInventoryMutation,
 } = branchInventoryApi;

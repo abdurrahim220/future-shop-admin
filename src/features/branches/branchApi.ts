@@ -6,15 +6,7 @@ export const branchApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ GET ALL BRANCHES
     getAllBranches: builder.query<
-      ApiResponse<{
-        items: IBranch[];
-        meta: {
-          page: number;
-          limit: number;
-          total: number;
-          totalPages: number;
-        };
-      }>,
+      ApiResponse<IBranch[]>,
       Record<string, string | number | boolean | undefined> | void
     >({
       query: (params) => ({

@@ -139,7 +139,7 @@ export default function AttributeValuesSheet({
             />
           </div>
 
-          {attribute?.type === "image" && (
+          {(attribute?.type === "color" || attribute?.type === "image") && (
             <div className="space-y-2">
               <Label htmlFor="hex-code">Hex Code / Color Swatch (Optional)</Label>
               <div className="flex gap-2">

@@ -44,13 +44,32 @@ export default function BranchesPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
 
-  const { data: branchesData, isLoading, isError, refetch, isFetching } = useGetAllBranchesQuery({
-    search: searchTerm,
-    status: statusFilter === "all" ? undefined : statusFilter,
-    type: typeFilter === "all" ? undefined : typeFilter,
-    page: currentPage,
-    limit: itemsPerPage,
+  const { data: branchesData, isLoading, isError, refetch, isFetching } = useGetAllBranchesQuery();
+
+  const rawBranches = branchesData?.data || [];
+
+  const filteredBranches = rawBranches.filter((branch) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      branch.branchName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      branch.branchCode.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "all" || branch.status === statusFilter;
+
+    const matchesType =
+      typeFilter === "all" || branch.type === typeFilter;
+
+    return matchesSearch && matchesStatus && matchesType;
   });
+
+  const totalItems = filteredBranches.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const paginatedBranches = filteredBranches.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const [deleteBranch, { isLoading: isDeleting }] = useDeleteBranchMutation();
 
@@ -191,27 +210,27 @@ export default function BranchesPage() {
         ) : (
           <div className="space-y-4">
             <BranchTable
-              branches={branchesData?.data?.items || []}
+              branches={paginatedBranches}
               onEdit={handleEdit}
               onDelete={handleDeleteClick}
             />
 
             {/* Pagination */}
-            {branchesData?.data?.meta && branchesData.data.meta.totalPages > 0 && (
+            {totalPages > 0 && (
               <div className="flex items-center justify-between px-2">
                 <div className="text-sm text-muted-foreground">
                   Showing{" "}
                   <span className="font-medium">
                     {Math.min(
                       (currentPage - 1) * itemsPerPage + 1,
-                      branchesData.data.meta.total
+                      totalItems
                     )}
                   </span>{" "}
                   to{" "}
                   <span className="font-medium">
-                    {Math.min(currentPage * itemsPerPage, branchesData.data.meta.total)}
+                    {Math.min(currentPage * itemsPerPage, totalItems)}
                   </span>{" "}
-                  of <span className="font-medium">{branchesData.data.meta.total}</span> results
+                  of <span className="font-medium">{totalItems}</span> results
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -224,22 +243,22 @@ export default function BranchesPage() {
                     Previous
                   </Button>
                   <div className="text-sm font-medium">
-                    Page {currentPage} of {branchesData.data.meta.totalPages}
+                    Page {currentPage} of {totalPages}
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() =>
                       setCurrentPage((p) =>
-                        Math.min(branchesData.data.meta.totalPages, p + 1)
+                        Math.min(totalPages, p + 1)
                       )
                     }
                     disabled={
-                      currentPage === branchesData.data.meta.totalPages || isFetching
+                      currentPage === totalPages || isFetching
                     }
                   >
                     Next
-                    <ChevronRight className="h-4 w-4 ml-1" />
+                    <ChevronRight className="h-4 w-4 mr-1" />
                   </Button>
                 </div>
               </div>

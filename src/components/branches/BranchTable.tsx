@@ -53,6 +53,11 @@ export default function BranchTable({ branches, onEdit, onDelete }: BranchTableP
                   <div className="flex flex-col">
                     <span className="font-medium">{branch.branchName}</span>
                     <span className="text-xs text-muted-foreground font-mono">{branch.branchCode}</span>
+                    {branch.sellerId && (
+                      <span className="text-[10px] text-muted-foreground mt-0.5">
+                        Shop: {typeof branch.sellerId === "object" ? branch.sellerId.shopName : branch.sellerId}
+                      </span>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>

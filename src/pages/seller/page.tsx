@@ -47,7 +47,9 @@ export default function SellerPage() {
   const [updateSeller, { isLoading: isUpdating }] = useUpdateSellerMutation();
   const [deleteSeller] = useDeleteSellerMutation();
 
-  const sellersList = response?.data?.items || [];
+  const sellersList = response?.data
+    ? (Array.isArray(response.data) ? response.data : (response.data as any).items || [])
+    : [];
   const filteredSellers = sellersList.filter((s: any) =>
     s.shopName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.address.toLowerCase().includes(searchTerm.toLowerCase())

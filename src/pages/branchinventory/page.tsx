@@ -23,7 +23,7 @@ export default function BranchInventoryPage() {
   const [itemsPerPage] = useState(10);
 
   // Fetch branches for dropdown filter
-  const { data: branchesData } = useGetAllBranchesQuery({ limit: 100 });
+  const { data: branchesData } = useGetAllBranchesQuery();
 
   const { data: inventoryData, isLoading, isError, refetch, isFetching } = useGetAllBranchInventoriesQuery({
     search: searchTerm,
@@ -83,7 +83,7 @@ export default function BranchInventoryPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Locations</SelectItem>
-              {branchesData?.data?.items?.map((branch) => (
+              {(branchesData?.data as any[])?.map((branch: any) => (
                 <SelectItem key={branch._id} value={branch._id}>
                   {branch.branchName}
                 </SelectItem>
@@ -130,7 +130,11 @@ export default function BranchInventoryPage() {
         ) : (
           <div className="space-y-4">
             <BranchInventoryTable
-              inventories={inventoryData?.data?.items || []}
+              inventories={
+                Array.isArray(inventoryData?.data)
+                  ? inventoryData.data
+                  : (inventoryData?.data as any)?.items || []
+              }
             />
 
             {/* Pagination */}

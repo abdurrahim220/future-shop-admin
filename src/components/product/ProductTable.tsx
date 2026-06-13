@@ -74,13 +74,17 @@ export default function ProductTable({
                 <TableCell>
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Layers className="h-3.5 w-3.5" />
-                    {product.categoryId || "None"}
+                    {typeof product.categoryId === "object"
+                      ? product.categoryId.name
+                      : product.categoryId || "None"}
                   </span>
                 </TableCell>
                 <TableCell>
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Tag className="h-3.5 w-3.5" />
-                    {product.brandId || "None"}
+                    {typeof product.brandId === "object"
+                      ? product.brandId.name
+                      : product.brandId || "None"}
                   </span>
                 </TableCell>
                 <TableCell>

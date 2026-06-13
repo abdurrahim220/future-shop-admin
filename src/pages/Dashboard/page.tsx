@@ -37,7 +37,9 @@ export default function DashboardPage() {
 
   // Calculations
   const orders = ordersData?.data || [];
-  const sellers = sellersData?.data?.items || [];
+  const sellers = sellersData?.data
+    ? (Array.isArray(sellersData.data) ? sellersData.data : (sellersData.data as any).items || [])
+    : [];
   const auditLogs = auditData?.data?.items || [];
 
   const totalOrders = orders.length;
@@ -45,7 +47,7 @@ export default function DashboardPage() {
     const amount = typeof order.subtotal === "number" ? order.subtotal : 0;
     return sum + amount;
   }, 0);
-  const activeSellersCount = sellers.filter(s => s.status === "approved").length;
+  const activeSellersCount = sellers.filter((s: any) => s.status === "approved").length;
 
   return (
     <AdminLayoutWithAuth>

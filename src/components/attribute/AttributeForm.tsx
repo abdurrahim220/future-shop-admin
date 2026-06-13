@@ -131,6 +131,7 @@ export default function AttributeForm({ initialData, onSuccess }: AttributeFormP
                 <SelectContent>
                   <SelectItem value="text">Text (e.g. Medium, Large)</SelectItem>
                   <SelectItem value="number">Number (e.g. 10, 11, 12)</SelectItem>
+                  <SelectItem value="color">Color (e.g. Red, Blue, with hex code)</SelectItem>
                   <SelectItem value="image">Image (e.g. Color swatch image)</SelectItem>
                 </SelectContent>
               </Select>

@@ -19,6 +19,7 @@ import {
 import type { IBranch } from "@/types/branchTypes";
 import { toast } from "react-toastify";
 import { useCreateBranchMutation, useUpdateBranchMutation } from "@/features/branches/branchApi";
+import { useGetAllSellersQuery } from "@/features/seller/sellerApi";
 import { Loader2 } from "lucide-react";
 
 interface BranchFormProps {
@@ -27,6 +28,7 @@ interface BranchFormProps {
 }
 
 interface FormValues {
+  sellerId: string;
   branchName: string;
   branchCode: string;
   type: "store" | "warehouse";
@@ -40,9 +42,16 @@ interface FormValues {
 export default function BranchForm({ initialData, onSuccess }: BranchFormProps) {
   const [createBranch, { isLoading: isCreating }] = useCreateBranchMutation();
   const [updateBranch, { isLoading: isUpdating }] = useUpdateBranchMutation();
+  const { data: sellersResponse } = useGetAllSellersQuery();
+  const sellers = sellersResponse?.data
+    ? (Array.isArray(sellersResponse.data) ? sellersResponse.data : (sellersResponse.data as any).items || [])
+    : [];
 
   const form = useForm<FormValues>({
     defaultValues: {
+      sellerId: typeof initialData?.sellerId === "object" && initialData.sellerId
+        ? initialData.sellerId._id
+        : (initialData?.sellerId as string) || "",
       branchName: initialData?.branchName || "",
       branchCode: initialData?.branchCode || "",
       type: initialData?.type || "store",
@@ -67,8 +76,20 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
       }
       onSuccess();
     } catch (error: unknown) {
-      const apiError = error as { data?: { message?: string } };
-      toast.error(apiError.data?.message || "Something went wrong saving branch");
+      const apiError = error as {
+        data?: {
+          message?: string;
+          errorMessages?: Array<{ path: string; message: string }>;
+        };
+      };
+      if (apiError.data?.errorMessages && apiError.data.errorMessages.length > 0) {
+        const errors = apiError.data.errorMessages
+          .map((e) => `${e.path}: ${e.message}`)
+          .join(" | ");
+        toast.error(`Validation Error: ${errors}`);
+      } else {
+        toast.error(apiError.data?.message || "Something went wrong saving branch");
+      }
     }
   };
 
@@ -77,8 +98,37 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[80vh] overflow-y-auto px-1">
         <FormField
           control={form.control}
+          name="sellerId"
+          rules={{ required: "Seller / Shop is required" }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Seller / Shop</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select seller / shop" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {sellers.map((seller: any) => (
+                    <SelectItem key={seller._id} value={seller._id}>
+                      {seller.shopName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="branchName"
-          rules={{ required: "Branch name is required" }}
+          rules={{
+            required: "Branch name is required",
+            minLength: { value: 2, message: "Branch name must be at least 2 characters" }
+          }}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Branch Name</FormLabel>
@@ -94,7 +144,10 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
           <FormField
             control={form.control}
             name="branchCode"
-            rules={{ required: "Branch code is required" }}
+            rules={{
+              required: "Branch code is required",
+              minLength: { value: 2, message: "Branch code must be at least 2 characters" }
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Branch Code</FormLabel>
@@ -113,7 +166,7 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
@@ -133,12 +186,15 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
         <FormField
           control={form.control}
           name="phone"
-          rules={{ required: "Contact phone is required" }}
+          rules={{
+            required: "Contact phone is required",
+            minLength: { value: 10, message: "Phone number must be at least 10 characters" }
+          }}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Contact Phone</FormLabel>
               <FormControl>
-                <Input placeholder="E.g., +15550199" {...field} />
+                <Input placeholder="E.g., +1555019900" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -148,7 +204,10 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
         <FormField
           control={form.control}
           name="address"
-          rules={{ required: "Address is required" }}
+          rules={{
+            required: "Address is required",
+            minLength: { value: 5, message: "Address must be at least 5 characters" }
+          }}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Address</FormLabel>
@@ -164,7 +223,10 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
           <FormField
             control={form.control}
             name="city"
-            rules={{ required: "City is required" }}
+            rules={{
+              required: "City is required",
+              minLength: { value: 2, message: "City must be at least 2 characters" }
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>City</FormLabel>
@@ -179,7 +241,10 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
           <FormField
             control={form.control}
             name="state"
-            rules={{ required: "State is required" }}
+            rules={{
+              required: "State is required",
+              minLength: { value: 2, message: "State must be at least 2 characters" }
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State</FormLabel>
@@ -199,7 +264,7 @@ export default function BranchForm({ initialData, onSuccess }: BranchFormProps) 
           render={({ field }) => (
             <FormItem>
               <FormLabel>Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />

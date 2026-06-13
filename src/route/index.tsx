@@ -24,6 +24,7 @@ import StockTransferPage from "@/pages/stocktransfer/page";
 import SubOrderPage from "@/pages/suborder/page";
 import SupportPage from "@/pages/support/page";
 import UserPage from "@/pages/user/page";
+import AttributePage from "@/pages/attribute/page";
 import { createBrowserRouter, Navigate } from "react-router";
 import ErrorPage from "@/components/sharedCom/ErrorPage";
 
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
       {
         path: "/product",
         element: <ProductPage />,
+      },
+      {
+        path: "/attribute",
+        element: <AttributePage />,
       },
       {
         path: "/reviews",
