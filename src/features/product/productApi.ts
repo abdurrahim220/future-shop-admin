@@ -87,6 +87,31 @@ export const productApi = baseApi.injectEndpoints({
         "Products",
       ],
     }),
+
+    // ✅ UPDATE VARIANT
+    updateVariant: builder.mutation<
+      ApiResponse<IProductVariant>,
+      { productId: string; variantId: string; data: Partial<CreateVariantPayload> }
+    >({
+      query: ({ productId, variantId, data }) => ({
+        url: `/product/${productId}/variants/${variantId}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { productId }) => [
+        { type: "Products", id: productId },
+        "Products",
+      ],
+    }),
+
+    // ✅ UPLOAD FILES
+    uploadFiles: builder.mutation<ApiResponse<string[]>, FormData>({
+      query: (data) => ({
+        url: "/upload",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -97,4 +122,6 @@ export const {
   useUpdateProductMutation,
   useCreateVariantMutation,
   useBulkCreateVariantsMutation,
+  useUpdateVariantMutation,
+  useUploadFilesMutation,
 } = productApi;

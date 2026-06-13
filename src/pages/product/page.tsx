@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import ProductTable from "@/components/product/ProductTable";
 import ProductForm from "@/components/product/ProductForm";
+import VariantsManager from "@/components/product/VariantsManager";
 import type { IProduct } from "@/types/productTypes";
 import { Plus, Search, RefreshCw, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
@@ -39,6 +40,7 @@ export default function ProductPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
   const [deletingProduct, setDeletingProduct] = useState<IProduct | null>(null);
+  const [managingVariantsProduct, setManagingVariantsProduct] = useState<IProduct | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -184,7 +186,7 @@ export default function ProductPage() {
               onEdit={handleEdit}
               onDelete={handleDeleteClick}
               onViewVariants={(product) => {
-                toast.info(`Viewing variants for ${product.name}`);
+                setManagingVariantsProduct(product);
               }}
             />
 
@@ -243,6 +245,25 @@ export default function ProductPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Variants/Pricing Manager Dialog */}
+        <Dialog open={!!managingVariantsProduct} onOpenChange={(open) => !open && setManagingVariantsProduct(null)}>
+          <DialogContent className="sm:max-w-[700px]">
+            <DialogHeader>
+              <DialogTitle>
+                {managingVariantsProduct?.hasVariants
+                  ? `Manage Options: ${managingVariantsProduct?.name}`
+                  : `Manage Pricing & Images: ${managingVariantsProduct?.name}`}
+              </DialogTitle>
+            </DialogHeader>
+            {managingVariantsProduct && (
+              <VariantsManager
+                product={managingVariantsProduct}
+                onSuccess={refetch}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayoutWithAuth>
   );

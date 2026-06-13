@@ -103,12 +103,10 @@ export default function ProductTable({
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      {product.hasVariants && (
-                        <DropdownMenuItem onClick={() => onViewVariants(product)}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Variants
-                        </DropdownMenuItem>
-                      )}
+                      <DropdownMenuItem onClick={() => onViewVariants(product)}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        {product.hasVariants ? "View Variants" : "Pricing & Images"}
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onEdit(product)}>
                         <Edit2 className="mr-2 h-4 w-4" />
                         Edit Product

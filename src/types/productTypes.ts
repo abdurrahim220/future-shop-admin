@@ -15,6 +15,8 @@ export interface IProduct {
   hasVariants: boolean;
   attributeIds: string[];
   status: "draft" | "pending" | "active";
+  variants?: IProductVariant[];
+  images?: string[];
 }
 
 export interface IProductVariant {
